@@ -6,7 +6,7 @@ sample/
 !images/.gitkeep
 api/__pycache__/
 api/packages/__pycache__/
-api/packages/utils/__pycache__/
+api/utils/__pycache__/
 api/.env
 api/venv
 app/node_modules/
