@@ -1,0 +1,9 @@
+.vscode
+./esdata/*
+sample/
+data_drive.json
+!esdata/.gitkeep 
+api/__pycache__/
+api/venv
+*.idea
+app/node_modules/
