@@ -5,6 +5,7 @@ import AppFooter from "./layout/AppFooter";
 // import Components from "./views/Components.vue";
 
 import Home from "./views/Home.vue";
+import Upload from "./views/Upload.vue";
 
 Vue.use(Router);
 
@@ -17,6 +18,24 @@ export default new Router({
       components: {
         header: AppHeader,
         default: Home,
+        footer: AppFooter
+      }
+    },
+    {
+      path: "/upload",
+      name: "upload",
+      components: {
+        header: AppHeader,
+        default: Upload,
+        footer: AppFooter
+      }
+    },
+    {
+      path: "/faq",
+      name: "faq",
+      components: {
+        header: AppHeader,
+        default: Upload,
         footer: AppFooter
       }
     }

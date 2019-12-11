@@ -1,75 +1,117 @@
 <template>
-    <div class="profile-page">
-        <section class="section-profile-cover section-shaped my-0">
-            <div class="shape shape-style-1 shape-primary shape-skew alpha-4">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
+  <div class="profile-page">
+    <div class="position-relative">
+      <section class="section-shaped my-0">
+        <div class="shape shape-style-1 shape-default shape-skew">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="container shape-container d-flex">
+          <div class="col px-0">
+            <div class="row">
+              <div class="col-lg-8">
+                <h1 class="display-3 text-white">Busca avançada de arquivos</h1>
+                <div class="form-group input-group input-group-alternative">
+                  <input
+                    aria-describedby="addon-right addon-left"
+                    placeholder="Insira seu termo de pesquisa"
+                    class="form-control"
+                  />
+                </div>
+                <div class="btn-wrapper">
+                  <button type="button" class="btn mb-3 mb-sm-0 btn-icon btn-white">
+                    <span class="btn-inner--icon">
+                      <i class="ni ni-zoom-split-in"></i>
+                    </span>
+                    <span class="btn-inner--text">Pesquisar</span>
+                  </button>
+                  <button type="button" class="btn btn-1 btn-neutral">Upload</button>
+                </div>
+              </div>
             </div>
-        </section>
-        <section class="section section-skew">
-            <div class="container">
-                <card shadow class="card-profile mt--300" no-body>
-                    <div class="px-4">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-3 order-lg-2">
-                                <div class="card-profile-image">
-                                    <a href="#">
-                                        <img v-lazy="'img/theme/team-4-800x800.jpg'" class="rounded-circle">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 order-lg-3 text-lg-right align-self-lg-center">
-                                <div class="card-profile-actions py-4 mt-lg-0">
-                                    <base-button type="info" size="sm" class="mr-4">Connect</base-button>
-                                    <base-button type="default" size="sm" class="float-right">Message</base-button>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 order-lg-1">
-                                <div class="card-profile-stats d-flex justify-content-center">
-                                    <div>
-                                        <span class="heading">22</span>
-                                        <span class="description">Friends</span>
-                                    </div>
-                                    <div>
-                                        <span class="heading">10</span>
-                                        <span class="description">Photos</span>
-                                    </div>
-                                    <div>
-                                        <span class="heading">89</span>
-                                        <span class="description">Comments</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-5">
-                            <h3>Jessica Jones
-                                <span class="font-weight-light">, 27</span>
-                            </h3>
-                            <div class="h6 font-weight-300"><i class="ni location_pin mr-2"></i>Bucharest, Romania</div>
-                            <div class="h6 mt-4"><i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer</div>
-                            <div><i class="ni education_hat mr-2"></i>University of Computer Science</div>
-                        </div>
-                        <div class="mt-5 py-5 border-top text-center">
-                            <div class="row justify-content-center">
-                                <div class="col-lg-9">
-                                    <p>An artist of considerable range, Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. An artist of considerable range.</p>
-                                    <a href="#">Show more</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </card>
-            </div>
-        </section>
+          </div>
+        </div>
+      </section>
     </div>
+
+    <section class="section section-lg pt-lg-0 mt--200">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-12">
+            <div class="row row-grid">
+              <div class="col-lg-4">
+                <div class="card border-0 card-lift--hover shadow">
+                  <div class="card-body py-5">
+                    <h6 class="text-primary text-uppercase">
+                      Nome do arquivo.pdf
+                      <br />
+                      <small class="text-muted">caminho/do/arquivo</small>
+                    </h6>
+                    <p class="description mt-3">
+                      Argon is a great free UI package based on Bootstrap 4
+                      that includes the most important components and features.
+                    </p>
+                    <div>
+                      <span class="badge badge-primary badge-pill">design</span>
+                      <span class="badge badge-primary badge-pill">system</span>
+                      <span class="badge badge-primary badge-pill">creative</span>
+                    </div>
+                    <button type="button" class="btn btn-sm mt-4 btn-primary">Download</button>
+                    <button
+                      type="button"
+                      class="btn btn-sm mt-4 btn-outline-primary"
+                      @click="showModal = true"
+                    >Alterar categoria</button>
+                    <label class="form-label mt-3">Nova categoria:</label>
+                <select class="custom-select custom-select-sm mb-3">
+                  <option selected>Open this select menu</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <modal :show.sync="showModal">
+      <template slot="header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+      </template>
+      <div>...</div>
+      <template slot="footer">
+        <base-button type="secondary" @click="showModal = false">Close</base-button>
+        <base-button type="primary">Save changes</base-button>
+      </template>
+    </modal>
+
+  </div>
 </template>
 <script>
-export default {};
+import Modal from '../components/Modal'
+
+export default {
+    name: "home",
+    componenets: {
+        Modal
+    },
+    data() {
+        return {
+            showModal: false
+        }
+    }
+};
 </script>
 <style>
 </style>
