@@ -1,12 +1,13 @@
 aniso8601==8.0.0
 argcomplete==1.10.0
 attrs==19.3.0
-beautifulsoup4==4.8.0
+beautifulsoup4==4.8.1
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
 docx2txt==0.8
 EbookLib==0.17.1
+elasticsearch==7.1.0
 extract-msg==0.23.1
 Flask==1.1.1
 idna==2.8
