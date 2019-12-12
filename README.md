@@ -12,7 +12,7 @@ Para testar o comportamento do elasticsearch foi criada uma aplicação que visa
 ### Modelo normalizado:
 Um dos objetivos do teste é descobrir a melhor forma de importar para o ElasticSearch dados que estão normalizados no banco relacional em uma estrutura similar a seguinte:
 
-![Modelo normalizado](https://github.com/thmarra/elasticsearch-app/modelo_normalizado.png)
+![Modelo normalizado](https://github.com/thmarra/elasticsearch-app/blob/master/modelo_normalizado.png)
 
 ## Endpoints:
 - Lista com pesquisa de arquivos
