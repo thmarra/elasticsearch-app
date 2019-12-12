@@ -1,5 +1,13 @@
-def owners():
-    return [{
+from flask import Blueprint, render_template, abort
+from ..utils.json import *
+
+default_values = Blueprint('default', __name__)
+
+
+@default_values.route('/authors')
+def authors():
+    """  """
+    return json_response([{
         'id': 1,
         'name': 'Romina Hadid',
         'image': 'team-3-800x800.jpg'
@@ -15,10 +23,13 @@ def owners():
         'id': 4,
         'name': 'Rae Tompson',
         'image': 'team-4-800x800.jpg'
-    }]
+    }])
 
+
+@default_values.route('/categories')
 def categories():
-    return [{
+    """  """
+    return json_response([{
         'id': 1,
         'description': 'Manuais'
     }, {
@@ -39,4 +50,4 @@ def categories():
     }, {
         'id': 7,
         'description': 'Outros'
-    }]
+    }])

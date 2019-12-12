@@ -1,6 +1,7 @@
-from .settings import config
-import textract
+from api.utils.settings import config
 import os
+import PyPDF2
+
 
 UPLOAD_FOLDER = config('IMAGE_FOLDER')
 ALLOWED_IMAGES = ['png', 'jpg', 'jpeg']
@@ -18,10 +19,12 @@ def save_file(file, filename):
     return True
 
 
-def conver_to_text(filepath):
-    # TODO arrumar o tratamento de tipo de arquivo
-    if not filepath.endswith('.pdf'):
-        return None
-    # Returns the text of given file
-    text = textract.process(filepath)
-    return text.decode('utf-8')
+def convert_to_text(file):
+    # Returns the text of given binary file
+    reader = PyPDF2.PdfFileReader(file)
+    count = reader.numPages
+    contents = ""
+    for i in range(count):
+        page = reader.getPage(i)
+        contents = contents + "\n" + page.extractText()
+    return contents

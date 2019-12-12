@@ -1,9 +1,11 @@
-from flask import Flask, request
+from flask import Flask
 from .utils.json import *
-from .utils import defaults
-from .utils.settings import config
+from .blueprints.default import default_values
+from .blueprints.document import documents
 
 app = Flask(__name__)
+app.register_blueprint(default_values)
+app.register_blueprint(documents)
 
 
 @app.route('/')
@@ -14,18 +16,6 @@ def search():
         'email': 'teste@teste.com',
         'id': 123
     })
-
-
-@app.route('/owners')
-def owners():
-    """  """
-    return json_response(defaults.owners())
-
-
-@app.route('/categories')
-def categories():
-    """  """
-    return json_response(defaults.categories())
 
 
 @app.route('/upload')
