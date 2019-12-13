@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-page">
+  <div style="min-height: 103vh">
     <div class="position-relative">
       <section class="section-shaped my-0">
         <div class="shape shape-style-1 shape-default shape-skew">
@@ -26,13 +26,16 @@
                   />
                 </div>
                 <div class="btn-wrapper">
-                  <button type="button" class="btn mb-3 mb-sm-0 btn-icon btn-white">
+                  <button
+                    type="button"
+                    class="btn mb-3 mb-sm-0 btn-icon btn-white"
+                    @click="search()"
+                  >
                     <span class="btn-inner--icon">
                       <i class="ni ni-zoom-split-in"></i>
                     </span>
                     <span class="btn-inner--text">Pesquisar</span>
                   </button>
-                  <button type="button" class="btn btn-1 btn-neutral">Upload</button>
                 </div>
               </div>
             </div>
@@ -46,22 +49,24 @@
         <div class="row justify-content-center">
           <div class="col-lg-12">
             <div class="row row-grid">
-              <div class="col-lg-4">
+              <div class="col-lg-4" v-for="d in documents" :key="d._id">
                 <div class="card border-0 card-lift--hover shadow">
                   <div class="card-body py-5">
                     <h6 class="text-primary text-uppercase">
-                      Nome do arquivo.pdf
+                      {{ d._source.file }}
                       <br />
-                      <small class="text-muted">caminho/do/arquivo</small>
+                      <small class="text-muted">Publicado em {{ parseDate(d._source.published_at) }}</small>
                     </h6>
                     <p class="description mt-3">
                       Argon is a great free UI package based on Bootstrap 4
                       that includes the most important components and features.
                     </p>
                     <div>
-                      <span class="badge badge-primary badge-pill">design</span>
-                      <span class="badge badge-primary badge-pill">system</span>
-                      <span class="badge badge-primary badge-pill">creative</span>
+                      <span
+                        class="badge badge-primary badge-pill"
+                        v-for="tag in d._source.tags"
+                        :key="tag"
+                      >{{ tag }}</span>
                     </div>
                     <button type="button" class="btn btn-sm mt-4 btn-primary">Download</button>
                     <button
@@ -70,12 +75,12 @@
                       @click="showModal = true"
                     >Alterar categoria</button>
                     <label class="form-label mt-3">Nova categoria:</label>
-                <select class="custom-select custom-select-sm mb-3">
-                  <option selected>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
+                    <select class="custom-select custom-select-sm mb-3">
+                      <option selected>Open this select menu</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -84,33 +89,31 @@
         </div>
       </div>
     </section>
-
-    <modal :show.sync="showModal">
-      <template slot="header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-      </template>
-      <div>...</div>
-      <template slot="footer">
-        <base-button type="secondary" @click="showModal = false">Close</base-button>
-        <base-button type="primary">Save changes</base-button>
-      </template>
-    </modal>
-
   </div>
 </template>
 <script>
-import Modal from '../components/Modal'
+import moment from 'moment';
 
 export default {
-    name: "home",
-    componenets: {
-        Modal
+  data() {
+    return {
+      term: "",
+      documents: []
+    };
+  },
+  methods: {
+    search() {
+      this.$axios.get("/document").then(response => {
+        this.documents = response.data.hits.hits;
+      });
     },
-    data() {
-        return {
-            showModal: false
-        }
+    parseDate(value) {
+      if (value) {
+        return moment(value).format("DD/MM/YYYY hh:mm");
+      }
+      return ''
     }
+  }
 };
 </script>
 <style>

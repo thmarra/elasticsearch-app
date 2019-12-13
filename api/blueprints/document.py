@@ -1,55 +1,52 @@
 from flask import Blueprint, request
+from flask_cors import cross_origin
 from ..utils.json import *
-from ..utils.file import convert_to_text
 from ..utils.communication import ElasticsearchClient
+from ..business.validate import is_valid_request_new_document
+
 
 documents = Blueprint('documents', __name__)
 
 
 @documents.route('/document', methods=['GET'])
+@cross_origin()
 def find():
     """  """
-    return json_response({'say': 'Hi!'})
+    es = ElasticsearchClient('c-*')
+    data = es.search(query={})
+    return json_response(data)
 
 
 @documents.route('/document', methods=['POST'])
+@cross_origin()
 def create():
     """  """
-    category = request.form.get('category')
-    data = {
-        'author_id': request.form.get('author'),
-        'tags': request.form.getlist('tags[]'),
-        'file': request.files['file'],
-        'contents': None
-    }
+    try:
+        data = is_valid_request_new_document(request)
+        index = data.get('category_id')
 
-    if not category:
-        return json_response({'error': 'The field category is required'}, 400)
-    if not data.get('author_id'):
-        return json_response({'error': 'The field author is required'}, 400)
-    if not data.get('file'):
-        return json_response({'error': 'The field file is required'}, 400)
+        es = ElasticsearchClient(index)
+        created, _id = es.insert(body=data)
 
-    data['contents'] = convert_to_text(data['file'])
+        if not created:
+            return json_response({'error': 'Could not save file'}, 500)
 
-    es = ElasticsearchClient(category)
-    success, id = es.insert(body=data)
+        response = es.find_id(id=_id)
 
-    if not success:
-        return json_response({'error': 'Could not save file'}, 500)
-
-    file = es.find_id(id)
-
-    return json_response({'file': file}, 201)
+        return json_response(response, 201)
+    except TypeError as e:
+        return json_response({'error': str(e)}, 400)
 
 
 @documents.route('/document', methods=['PUT'])
+@cross_origin()
 def update():
     """  """
     pass
 
 
 @documents.route('/document/change-category', methods=['PUT'])
+@cross_origin()
 def change_category():
     """  """
     pass

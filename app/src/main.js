@@ -20,6 +20,16 @@ import App from "./App.vue";
 import router from "./router";
 import Argon from "./plugins/argon-kit";
 import './registerServiceWorker'
+import axios from 'axios'
+
+const api  = axios.create({
+  baseURL: 'http://127.0.0.1:5000',
+  headers:{
+    Accepts: 'application/json'
+  }
+})
+
+Vue.prototype.$axios = api;
 
 Vue.config.productionTip = false;
 Vue.use(Argon);

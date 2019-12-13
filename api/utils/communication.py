@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from .settings import config
 
 
@@ -12,13 +12,31 @@ class ElasticsearchClient(object):
         self.client = Elasticsearch([config('ELASTICSEARCH_HOST', 'localhost')],
                                     port=config('ELASTICSEARCH_PORT', 9200),
                                     # sniff before doing anything
-                                    sniff_on_start=True,
+                                    sniff_on_start=False,
                                     # refresh nodes after a node fails to respond
-                                    sniff_on_connection_fail=True,
+                                    sniff_on_connection_fail=False,
                                     )
 
     def change_index(self, index):
         self.index = index
+
+    def bulk(self, body, action='index'):
+        payload = []
+        if type(body) is list:
+            for item in body:
+                payload.append({
+                    '_op_type': action,
+                    '_index': self.index,
+                    '_source': item
+                })
+        else:
+            payload.append({
+                '_op_type': action,
+                '_index': self.index,
+                '_source': body
+            })
+        took, res = helpers.bulk(self.client, actions=payload)
+        return took, (took == len(payload))
 
     def insert(self, body, id=None):
         res = self.client.index(index=self.index, body=body, id=id)
@@ -30,7 +48,7 @@ class ElasticsearchClient(object):
 
     def find_id(self, id):
         res = self.client.get(index=self.index, id=id)
-        print(res)
+        return res
 
     def search(self, query):
         return self.client.search(index=self.index, body=query)

@@ -32,91 +32,98 @@
             </div>
             <div class="card shadow-lg--hover mt-5 mb-5 shadow">
               <div class="card-body">
-                <div role="alert" class="alert alert-danger alert-dismissible">
-                  <span class="alert-inner--icon">
-                    <i class="ni ni-like-2"></i>
-                  </span>
-                  <span class="alert-inner--text">
-                    <span>
-                      <strong>primary!</strong> This is a primary alert—check it out!
+                <transition name="slide">
+                  <div role="alert" class="alert alert-danger" v-show="alerts.error">
+                    <span class="alert-inner--icon">
+                      <i class="ni ni-air-baloon"></i>
                     </span>
-                  </span>
-                  <button type="button" data-dismiss="alert" aria-label="Close" class="close">
+                    <span class="alert-inner--text">
+                      <span>Não foi possível salvar arquivo</span>
+                    </span>
+                    <!-- <button type="button" data-dismiss="alert" aria-label="Close" class="close">
                     <span aria-hidden="true">×</span>
-                  </button>
-                </div>
+                    </button>-->
+                  </div>
+                </transition>
+                <transition name="slide">
+                  <div role="alert" class="alert alert-primary" v-show="alerts.success">
+                    <span class="alert-inner--icon">
+                      <i class="ni ni-like-2"></i>
+                    </span>
+                    <span class="alert-inner--text">
+                      <span>Arquivo enviado com sucesso</span>
+                    </span>
+                    <!-- <button type="button" data-dismiss="alert" aria-label="Close" class="close">
+                    <span aria-hidden="true">×</span>
+                    </button>-->
+                  </div>
+                </transition>
                 <!-- FORM -->
                 <div class="form-group row">
                   <label for="tag" class="col-sm-2 col-form-label" style="line-height: 0">Tag:</label>
                   <div class="col-sm-10">
                     <input
-                      type="email"
+                      type="text"
                       class="form-control form-control-sm"
                       id="tag"
-                      placeholder="Email"
+                      placeholder="Divida os valores por vírgula (,)"
+                      v-model="tags"
+                      @keyup="handleTags()"
                     />
-                    <small>Divida os valores por vírgula (,)</small>
                   </div>
                 </div>
                 <div class="row mb-3">
                   <div class="col-lg-12">
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
-                    <span class="badge text-uppercase badge-primary">primary</span>
+                    <span
+                      class="badge text-uppercase badge-primary"
+                      v-for="(tag, i) in form.tags"
+                      :key="i"
+                    >{{ tag }}</span>
                   </div>
                 </div>
 
-                <label class="form-label">Dono:</label>
+                <label class="form-label">Autor:</label>
                 <div class="row">
-                  <div class="col-sm">
+                  <div class="col-sm" v-for="author in authors" :key="author.id">
                     <div class="custom-control custom-radio mb-3">
                       <input
-                        name="custom-radio-1"
-                        class="custom-control-input"
-                        id="customRadio1"
                         type="radio"
-                      />
-                      <label class="custom-control-label" for="customRadio1">Aaaaaa</label>
-                    </div>
-                  </div>
-                  <div class="col-sm">
-                    <div class="custom-control custom-radio mb-3">
-                      <input
-                        name="custom-radio-1"
+                        name="author"
                         class="custom-control-input"
-                        id="customRadio1"
-                        type="radio"
+                        :id="author.id"
+                        :value="author.id"
+                        v-model="form.author"
                       />
-                      <label class="custom-control-label" for="customRadio1">Bbbbb</label>
-                    </div>
-                  </div>
-                  <div class="col-sm">
-                    <div class="custom-control custom-radio mb-3">
-                      <input
-                        name="custom-radio-1"
-                        class="custom-control-input"
-                        id="customRadio1"
-                        type="radio"
-                      />
-                      <label class="custom-control-label" for="customRadio1">Ccccc</label>
+                      <label class="custom-control-label" :for="author.id">{{ author.name }}</label>
                     </div>
                   </div>
                 </div>
 
                 <label class="form-label">Categoria:</label>
-                <select class="custom-select custom-select-sm mb-3">
-                  <option selected>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select class="custom-select custom-select-sm mb-3" v-model="form.category">
+                  <option
+                    v-for="category in categories"
+                    :key="category.id"
+                    :value="category.id"
+                  >{{ category.description }}</option>
                 </select>
 
-                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+                <div class="form-group">
+                  <label for="arquivo">Arquivo:</label>
+                  <input
+                    type="file"
+                    class="form-control-file"
+                    id="arquivo"
+                    ref="file"
+                    @change="handleFileUpload()"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  class="mt-4 btn btn-block btn-primary"
+                  @click="upload()"
+                >Enviar</button>
               </div>
             </div>
           </div>
@@ -126,26 +133,106 @@
   </div>
 </template>
 <script>
-import vue2Dropzone from "vue2-dropzone";
-import "vue2-dropzone/dist/vue2Dropzone.min.css";
-
 export default {
-  components: {
-    vueDropzone: vue2Dropzone
-  },
   data() {
     return {
-      dropzoneOptions: {
-        url: "https://httpbin.org/post",
-        thumbnailWidth: 150,
-        maxFilesize: 0.5,
-        headers: { "My-Awesome-Header": "header value" }
+      tags: "",
+      authors: [],
+      categories: [],
+      form: {
+        tags: [],
+        file: null,
+        author: null,
+        category: null
       },
-      file: null,
-      file2: null
+      alerts: {
+        error: false,
+        success: false
+      }
     };
+  },
+  created() {
+    this.getAuthor();
+    this.getCategory();
+  },
+  methods: {
+    getAuthor() {
+      this.$axios.get("/authors").then(response => {
+        this.authors = response.data;
+      });
+    },
+    getCategory() {
+      this.$axios.get("/categories").then(response => {
+        this.categories = response.data;
+      });
+    },
+    handleTags() {
+      // separa a string baseado na virgula e remove espaços e valores vazios
+      this.form.tags = this.tags
+        .split(",")
+        .map(function(item) {
+          return item.trim();
+        })
+        .filter(function(item) {
+          return item;
+        });
+    },
+    handleFileUpload() {
+      this.form.file = this.$refs.file.files[0];
+    },
+    upload() {
+      let form = new FormData();
+      form.append("file", this.form.file);
+      form.append("tags", this.form.tags);
+      form.append("author", this.form.author);
+      form.append("category", this.form.category);
+
+      this.$axios
+        .post("/document", form, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          this.alerts.success = true;
+          setTimeout(() => {
+            this.alerts.success = false;
+            this.form = {
+              tags: [],
+              file: null,
+              author: null,
+              category: null
+            };
+          }, 2000);
+        })
+        .catch(error => {
+          this.alerts.error = true;
+        });
+    }
   }
 };
 </script>
 <style>
+.slide-enter-active {
+  -moz-transition-duration: 0.5s;
+  -webkit-transition-duration: 0.5s;
+  -o-transition-duration: 0.5s;
+  transition-duration: 0.5s;
+  -moz-transition-timing-function: ease-in;
+  -webkit-transition-timing-function: ease-in;
+  -o-transition-timing-function: ease-in;
+  transition-timing-function: ease-in;
+}
+
+.slide-enter-to,
+.slide-leave {
+  max-height: 400px;
+  overflow: hidden;
+}
+
+.slide-enter,
+.slide-leave-to {
+  overflow: hidden;
+  max-height: 0;
+}
 </style>
