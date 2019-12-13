@@ -8,7 +8,7 @@ api/__pycache__/
 api/utils/__pycache__/
 api/packages/__pycache__/
 api/app/utils/__pycache__/
-# api/blueprints/__pycache__/
+api/blueprints/__pycache__/
 api/.env
 api/venv
 app/node_modules/
