@@ -3,6 +3,7 @@
 ./esdata/*
 sample/
 !esdata/.gitkeep
+esdata/nodes/
 !images/.gitkeep
 api/__pycache__/
 api/utils/__pycache__/
