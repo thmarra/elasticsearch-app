@@ -99,13 +99,13 @@
                   </div>
                 </div>
 
-                <label class="form-label">Categoria:</label>
-                <select class="custom-select custom-select-sm mb-3" v-model="form.category">
+                <label class="form-label">Editora:</label>
+                <select class="custom-select custom-select-sm mb-3" v-model="form.publisher">
                   <option
-                    v-for="category in categories"
-                    :key="category.id"
-                    :value="category.id"
-                  >{{ category.description }}</option>
+                    v-for="publisher in publishers"
+                    :key="publisher.id"
+                    :value="publisher.id"
+                  >{{ publisher.name }}</option>
                 </select>
 
                 <div class="form-group">
@@ -138,12 +138,12 @@ export default {
     return {
       tags: "",
       authors: [],
-      categories: [],
+      publishers: [],
       form: {
         tags: [],
         file: null,
         author: null,
-        category: null
+        publisher: null
       },
       alerts: {
         error: false,
@@ -153,7 +153,7 @@ export default {
   },
   created() {
     this.getAuthor();
-    this.getCategory();
+    this.getPublisher();
   },
   methods: {
     getAuthor() {
@@ -161,9 +161,10 @@ export default {
         this.authors = response.data;
       });
     },
-    getCategory() {
-      this.$axios.get("/categories").then(response => {
-        this.categories = response.data;
+    getPublisher() {
+      this.$axios.get("/publishers").then(response => {
+        this.publishers = response.data;
+        console.log(this.publishers)
       });
     },
     handleTags() {

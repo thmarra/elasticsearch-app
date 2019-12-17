@@ -51,6 +51,4 @@ class ElasticsearchClient(object):
         return res
 
     def search(self, query, source):
-        print(self.index, query)
-        # query['_source_include'] = source
         return self.client.search(index=self.index, body=query, params={'_source_includes': source})

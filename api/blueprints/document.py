@@ -17,8 +17,6 @@ def find():
     search = request.args.get('search', '')
     exact = request.args.get('exact', False)
 
-    print(publisher, search)
-
     if not publisher:
         return json_response({'error': 'The field publisher is required'}, 400)
 

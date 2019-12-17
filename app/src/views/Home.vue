@@ -18,18 +18,33 @@
             <div class="row">
               <div class="col-lg-8">
                 <h1 class="display-3 text-white">Busca avançada de arquivos</h1>
-                <div class="form-group input-group input-group-alternative">
-                  <input
-                    aria-describedby="addon-right addon-left"
-                    placeholder="Insira seu termo de pesquisa"
-                    class="form-control"
-                  />
+                <div class="row">
+                  <div class="col-lg-8 form-group input-group input-group-alternative">
+                    <input
+                      aria-describedby="addon-right addon-left"
+                      placeholder="Insira seu termo de pesquisa"
+                      class="form-control"
+                      v-model="search"
+                    />
+                  </div>
+                  <div class="col-lg-4">
+                    <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
+                    <select class="custom-select mr-sm-2" v-model="publisher">
+                      <option value="" selected>Editora</option>
+                      <option
+                        v-for="publisher in publishers"
+                        :key="publisher.id"
+                        :value="publisher.id"
+                      >{{ publisher.name }}</option>
+                    </select>
+                  </div>
                 </div>
+                <!-- <base-checkbox class="mb-3" v-model="exact">Ao pé da letra</base-checkbox> -->
                 <div class="btn-wrapper">
                   <button
                     type="button"
                     class="btn mb-3 mb-sm-0 btn-icon btn-white"
-                    @click="search()"
+                    @click="searchDocs()"
                   >
                     <span class="btn-inner--icon">
                       <i class="ni ni-zoom-split-in"></i>
@@ -92,18 +107,28 @@
   </div>
 </template>
 <script>
-import moment from 'moment';
+import moment from "moment";
+import BaseCheckbox from "../components/BaseCheckbox";
 
 export default {
+  components: {
+    BaseCheckbox
+  },
   data() {
     return {
-      term: "",
-      documents: []
+      search: "",
+      exact: false,
+      publisher: "",
+      documents: [],
+      publishers: []
     };
   },
+  created() {
+    this.getPublisher();
+  },
   methods: {
-    search() {
-      this.$axios.get("/document").then(response => {
+    searchDocs() {
+      this.$axios.get("/document",  {params: { publisher: this.publisher, search: this.search }}).then(response => {
         this.documents = response.data.hits.hits;
       });
     },
@@ -111,7 +136,13 @@ export default {
       if (value) {
         return moment(value).format("DD/MM/YYYY hh:mm");
       }
-      return ''
+      return "";
+    },
+    getPublisher() {
+      this.$axios.get("/publishers").then(response => {
+        this.publishers = response.data;
+        console.log(this.publishers);
+      });
     }
   }
 };
