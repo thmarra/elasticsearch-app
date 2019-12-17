@@ -13,17 +13,25 @@ _INDEX = 'arquivos'
 @cross_origin()
 def find():
     """  """
-    publisher = 'p5'
-    search = 'contribuinte'
+    publisher = request.args.get('publisher')
+    search = request.args.get('search', '')
+    exact = request.args.get('exact', False)
+
+    print(publisher, search)
+
+    if not publisher:
+        return json_response({'error': 'The field publisher is required'}, 400)
+
+    source = [
+        "file",
+        "author",
+        "publisher",
+        "tags",
+        "published_at",
+        "imported_at"
+    ]
+
     query = {
-        "_source": [
-            "file",
-            "author",
-            "publisher",
-            "tags",
-            "published_at",
-            "imported_at"
-        ],
         "query": {
             "bool": {
                 "filter": {
@@ -63,7 +71,7 @@ def find():
     }
 
     es = ElasticsearchClient(_INDEX)
-    data = es.search(query=query)
+    data = es.search(query=query, source=source)
     return json_response(data)
 
 

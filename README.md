@@ -28,3 +28,106 @@ Os demais campos a serem pesquisados são:
 - Data de criação
 - Data de envio
 - Conteúdo do arquivo
+
+### Mappings:
+```
+PUT /arquivos
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "brazilian_stop": {
+          "type": "stop",
+          "stopwords": "_brazilian_"
+        },
+        "brazilian_stemmer": {
+          "type": "stemmer",
+          "language": "brazilian"
+        },
+        "stemmer_plural_portugues": {
+          "type": "stemmer",
+          "name": "minimal_portuguese"
+        },
+        "split_on_change_case": {
+          "type": "word_delimiter",
+          "preserve_original": true,
+          "split_on_numerics": false
+        }
+      },
+      "analyzer": {
+        "rebuilt_brazilian": {
+          "tokenizer": "standard",
+          "filter": [
+            "split_on_change_case",
+            "lowercase",
+            "asciifolding",
+            "brazilian_stop",
+            "brazilian_stemmer",
+            "stemmer_plural_portugues"
+          ]
+        },
+        "basic_analyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "author": {
+        "properties": {
+          "id": {
+            "type": "keyword"
+          },
+          "image": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "text"
+          }
+        }
+      },
+      "publisher": {
+        "properties": {
+          "id": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "text"
+          }
+        }
+      },
+      "contents": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "text",
+            "analyzer": "basic_analyzer"
+          }
+        }
+      },
+      "file": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "imported_at": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
+      },
+      "published_at": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
+      }
+    }
+  }
+}
+```
