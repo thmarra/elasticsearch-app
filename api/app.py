@@ -17,11 +17,7 @@ app.register_blueprint(documents)
 @cross_origin()
 def search():
     """  """
-    return json_response({
-        'username': 'teste',
-        'email': 'teste@teste.com',
-        'id': 123
-    })
+    pass
 
 
 @app.route('/upload')

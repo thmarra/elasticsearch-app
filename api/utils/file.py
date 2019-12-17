@@ -1,4 +1,4 @@
-from api.utils.settings import config
+from .settings import config
 import os
 import PyPDF2
 

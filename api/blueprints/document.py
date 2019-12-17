@@ -6,14 +6,64 @@ from ..business.validate import is_valid_request_new_document
 
 
 documents = Blueprint('documents', __name__)
+_INDEX = 'arquivos'
 
 
 @documents.route('/document', methods=['GET'])
 @cross_origin()
 def find():
     """  """
-    es = ElasticsearchClient('c-*')
-    data = es.search(query={})
+    publisher = 'p5'
+    search = 'contribuinte'
+    query = {
+        "_source": [
+            "file",
+            "author",
+            "publisher",
+            "tags",
+            "published_at",
+            "imported_at"
+        ],
+        "query": {
+            "bool": {
+                "filter": {
+                    "term": {
+                        "publisher.id": publisher
+                    }
+                },
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": search,
+                            "fields": [
+                                "contents",
+                                "file",
+                                "tags",
+                                "author.name"
+                            ],
+                            "type": "best_fields",
+                            "fuzziness": 1
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "number_of_fragments": 1,
+            "order": "score",
+            "pre_tags": """<span class="highlight">""",
+            "post_tags": "</span>",
+            "fields": {
+                "contents": {},
+                "file": {},
+                "tags": {},
+                "author.name": {}
+            }
+        }
+    }
+
+    es = ElasticsearchClient(_INDEX)
+    data = es.search(query=query)
     return json_response(data)
 
 
@@ -23,9 +73,8 @@ def create():
     """  """
     try:
         data = is_valid_request_new_document(request)
-        index = data.get('category_id')
 
-        es = ElasticsearchClient(index)
+        es = ElasticsearchClient(_INDEX)
         created, _id = es.insert(body=data)
 
         if not created:
@@ -45,8 +94,8 @@ def update():
     pass
 
 
-@documents.route('/document/change-category', methods=['PUT'])
+@documents.route('/document/change-publisher', methods=['PUT'])
 @cross_origin()
-def change_category():
+def change_publisher():
     """  """
     pass

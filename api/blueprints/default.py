@@ -5,44 +5,44 @@ from ..utils.json import *
 default_values = Blueprint('default', __name__)
 
 _AUTHORS = [{
-        'id': 'a-1',
+        'id': 'a1',
         'name': 'Romina Hadid',
         'image': 'team-3-800x800.jpg'
     }, {
-        'id': 'a-2',
+        'id': 'a2',
         'name': 'Alexander Smith',
         'image': 'team-1-800x800.jpg'
     }, {
-        'id': 'a-3',
+        'id': 'a3',
         'name': 'Jane Doe',
         'image': 'team-1-800x800.jpg'
     }, {
-        'id': 'a-4',
+        'id': 'a4',
         'name': 'Rae Tompson',
         'image': 'team-4-800x800.jpg'
     }]
 
-_CATEGORIES = [{
-        'id': 'c-1',
-        'description': 'Manuais'
+_PUBLISHERS = [{
+        'id': 'p1',
+        'name': 'Grupo Lund'
     }, {
-        'id': 'c-2',
-        'description': 'Certidões'
+        'id': 'p2',
+        'name': 'Editora Três'
     }, {
-        'id': 'c-3',
-        'description': 'Arquivos'
+        'id': 'p3',
+        'name': 'Devir Livraria'
     }, {
-        'id': 'c-4',
-        'description': 'Contas / boletos'
+        'id': 'p4',
+        'name': 'IBEP'
     }, {
-        'id': 'c-5',
-        'description': 'Legislação'
+        'id': 'p5',
+        'name': 'Companhia das Letras'
     }, {
-        'id': 'c-6',
-        'description': 'Tutoriais'
+        'id': 'p6',
+        'name': 'JBC'
     }, {
-        'id': 'c-7',
-        'description': 'Outros'
+        'id': 'p7',
+        'name': 'Outros'
     }]
 
 
@@ -53,8 +53,8 @@ def authors():
     return json_response(_AUTHORS)
 
 
-@default_values.route('/categories')
+@default_values.route('/publishers')
 @cross_origin()
-def categories():
+def publishers():
     """  """
-    return json_response(_CATEGORIES)
+    return json_response(_PUBLISHERS)
