@@ -14,7 +14,7 @@ _INDEX = 'arquivos'
 def find():
     """  """
     publisher = request.args.get('publisher')
-    search = request.args.get('search', '')
+    search = request.args.get('search')
     exact = request.args.get('exact', False)
 
     if not publisher:
@@ -36,22 +36,8 @@ def find():
                     "term": {
                         "publisher.id": publisher
                     }
-                },
-                "must": [
-                    {
-                        "multi_match": {
-                            "query": search,
-                            "fields": [
-                                "contents",
-                                "file",
-                                "tags",
-                                "author.name"
-                            ],
-                            "type": "best_fields",
-                            "fuzziness": 1
-                        }
-                    }
-                ]
+                }
+                # "must"
             }
         },
         "highlight": {
@@ -67,6 +53,23 @@ def find():
             }
         }
     }
+
+    if search:
+        query['query']['bool']['must'] = [
+            {
+                "multi_match": {
+                    "query": search,
+                    "fields": [
+                        "contents",
+                        "file",
+                        "tags",
+                        "author.name"
+                    ],
+                    "type": "best_fields",
+                    "fuzziness": 1
+                }
+            }
+        ]
 
     es = ElasticsearchClient(_INDEX)
     data = es.search(query=query, source=source)

@@ -76,7 +76,7 @@ def import_file(files):
                 # es.change_index(data['publisher']['id'])
                 created, _id = es.insert(body=data)
                 print(_id)
-                sys.exit()
+                # sys.exit()
             except Exception as e:
                 print(filename, str(e), sep=": ")
 

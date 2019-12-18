@@ -30,7 +30,7 @@
                   <div class="col-lg-4">
                     <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preferência</label>
                     <select class="custom-select mr-sm-2" v-model="publisher">
-                      <option value="" selected>Editora</option>
+                      <option value selected>Editora</option>
                       <option
                         v-for="publisher in publishers"
                         :key="publisher.id"
@@ -64,26 +64,23 @@
         <div class="row justify-content-center">
           <div class="col-lg-12">
             <div class="row row-grid">
-              <div class="col-lg-4" v-for="d in documents" :key="d._id">
+              <div class="col-lg-4 mb-5" v-for="d in documents" :key="d._id">
                 <div class="card border-0 card-lift--hover shadow">
                   <div class="card-body py-5">
                     <h6 class="text-primary text-uppercase">
-                      {{ d._source.file }}
+                      <div v-html="parseTitleHighlight(d)"></div>
                       <br />
                       <small class="text-muted">Publicado em {{ parseDate(d._source.published_at) }}</small>
                     </h6>
-                    <p class="description mt-3">
-                      Argon is a great free UI package based on Bootstrap 4
-                      that includes the most important components and features.
-                    </p>
+                    <p class="description mt-3" v-html="parseTextHighlight(d)"></p>
                     <div>
                       <span
-                        class="badge badge-primary badge-pill"
-                        v-for="tag in d._source.tags"
+                        v-for="(match, tag) in parseTagHighlight(d)"
+                        :class="[match ? 'badge-warning' : 'badge-primary', 'badge badge-pill']"
                         :key="tag"
                       >{{ tag }}</span>
                     </div>
-                    <button type="button" class="btn btn-sm mt-4 btn-primary">Download</button>
+                    <!-- <button type="button" class="btn btn-sm mt-4 btn-primary">Download</button>
                     <button
                       type="button"
                       class="btn btn-sm mt-4 btn-outline-primary"
@@ -95,7 +92,7 @@
                       <option value="1">One</option>
                       <option value="2">Two</option>
                       <option value="3">Three</option>
-                    </select>
+                    </select>-->
                   </div>
                 </div>
               </div>
@@ -128,9 +125,13 @@ export default {
   },
   methods: {
     searchDocs() {
-      this.$axios.get("/document",  {params: { publisher: this.publisher, search: this.search }}).then(response => {
-        this.documents = response.data.hits.hits;
-      });
+      this.$axios
+        .get("/document", {
+          params: { publisher: this.publisher, search: this.search }
+        })
+        .then(response => {
+          this.documents = response.data.hits.hits;
+        });
     },
     parseDate(value) {
       if (value) {
@@ -143,9 +144,49 @@ export default {
         this.publishers = response.data;
         console.log(this.publishers);
       });
+    },
+    parseTitleHighlight(doc) {
+      if (
+        doc.hasOwnProperty("highlight") &&
+        doc.highlight.hasOwnProperty("file")
+      ) {
+        return doc.highlight.file[0];
+      }
+      return doc._source.file;
+    },
+    parseTextHighlight(doc) {
+      if (
+        doc.hasOwnProperty("highlight") &&
+        doc.highlight.hasOwnProperty("contents")
+      ) {
+        return doc.highlight.contents[0];
+      }
+      return doc._source.contents.substr(0, 100) + "...";
+    },
+    parseTagHighlight(doc) {
+      let tags = {};
+      doc._source.tags.forEach((el, i, ar) => {
+        tags[el] = false;
+      });
+      if (
+        doc.hasOwnProperty("highlight") &&
+        doc.highlight.hasOwnProperty("tags")
+      ) {
+        const html = new DOMParser().parseFromString(
+          doc.highlight.tags[0],
+          "text/html"
+        );
+        const tag = html.getElementsByClassName("highlight")[0].innerText;
+        tags[tag] = true;
+      }
+      return tags;
     }
   }
 };
 </script>
 <style>
+.highlight {
+  font-weight: bold;
+  color: #f16e3f;
+}
 </style>
