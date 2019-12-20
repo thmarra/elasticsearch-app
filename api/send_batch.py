@@ -8,6 +8,7 @@ from math import ceil
 
 
 process_count = 3
+# sample_files = '/home/cpmarra/Projects/esdata/sample'
 sample_files = '/home/cpmarra/Projects/python/crawlers/sample_pdf'
 
 _TAGS = [

@@ -31,10 +31,23 @@ Os demais campos a serem pesquisados são:
 
 ### Mappings:
 ```
-PUT /arquivos
+PUT arquivos
 {
   "settings": {
     "analysis": {
+      "analyzer": {
+        "my_analyzer": {
+          "tokenizer": "my_tokenizer",
+          "filter": [
+            "split_on_change_case",
+            "min_length",
+            "lowercase",
+            "asciifolding",
+            "brazilian_stop",
+            "stemmer_plural_portugues"
+          ]
+        }
+      },
       "filter": {
         "brazilian_stop": {
           "type": "stop",
@@ -50,80 +63,33 @@ PUT /arquivos
         },
         "split_on_change_case": {
           "type": "word_delimiter",
+          "split_on_case_change": true,
           "preserve_original": true,
-          "split_on_numerics": false
+          "split_on_numerics": true,
+          "catenate_numbers": true,
+          "catenate_words": true,
+          "generate_number_parts": false
+        },
+        "min_length": {
+          "type": "length",
+          "min": 2
         }
       },
-      "analyzer": {
-        "rebuilt_brazilian": {
-          "tokenizer": "standard",
-          "filter": [
-            "split_on_change_case",
-            "lowercase",
-            "asciifolding",
-            "brazilian_stop",
-            "brazilian_stemmer",
-            "stemmer_plural_portugues"
-          ]
-        },
-        "basic_analyzer": {
-          "tokenizer": "standard",
-          "filter": [
-            "lowercase",
-            "asciifolding"
-          ]
+      "tokenizer": {
+        "my_tokenizer": {
+          "type": "pattern",
+          "pattern": """["#!$%\^&\*;:{}=\_`~()\[\]\s]"""
         }
       }
     }
   },
   "mappings": {
     "properties": {
-      "author": {
-        "properties": {
-          "id": {
-            "type": "keyword"
-          },
-          "image": {
-            "type": "keyword"
-          },
-          "name": {
-            "type": "text"
-          }
-        }
-      },
-      "publisher": {
-        "properties": {
-          "id": {
-            "type": "keyword"
-          },
-          "name": {
-            "type": "text"
-          }
-        }
-      },
-      "contents": {
-        "type": "text",
-        "fields": {
-          "raw": {
-            "type": "text",
-            "analyzer": "basic_analyzer"
-          }
-        }
-      },
-      "file": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      },
-      "imported_at": {
+      "published_at": {
         "type": "date",
         "format": "yyyy-MM-dd HH:mm:ss"
       },
-      "published_at": {
+      "imported_at": {
         "type": "date",
         "format": "yyyy-MM-dd HH:mm:ss"
       }

@@ -6,20 +6,16 @@ default_values = Blueprint('default', __name__)
 
 _AUTHORS = [{
         'id': 'a1',
-        'name': 'Romina Hadid',
-        'image': 'team-3-800x800.jpg'
+        'name': 'Romina Hadid'
     }, {
         'id': 'a2',
-        'name': 'Alexander Smith',
-        'image': 'team-1-800x800.jpg'
+        'name': 'Alexander Smith'
     }, {
         'id': 'a3',
-        'name': 'Jane Doe',
-        'image': 'team-1-800x800.jpg'
+        'name': 'Jane Doe'
     }, {
         'id': 'a4',
-        'name': 'Rae Tompson',
-        'image': 'team-4-800x800.jpg'
+        'name': 'Rae Tompson'
     }]
 
 _PUBLISHERS = [{
@@ -58,3 +54,11 @@ def authors():
 def publishers():
     """  """
     return json_response(_PUBLISHERS)
+
+
+def author(id):
+    return next(filter(lambda author: author['id'] == id, _AUTHORS), None)
+
+
+def publisher(id):
+    return next(filter(lambda publisher: publisher['id'] == id, _PUBLISHERS), None)

@@ -3,10 +3,22 @@ from flask_cors import cross_origin
 from ..utils.json import *
 from ..utils.communication import ElasticsearchClient
 from ..business.validate import is_valid_request_new_document
+from datetime import datetime
+import re
 
 
 documents = Blueprint('documents', __name__)
 _INDEX = 'arquivos'
+
+
+def _look_for_single_date(string):
+    pattern = re.compile('^([0-9]{2}\/[0-9]{2}\/[0-9]{4}|[0-9]{2}-[0-9]{2}-[0-9]{4})$')
+    match = pattern.findall(string)
+    if len(match) == 1 and '-' not in match[0]:
+        return datetime.strptime(match[0], '%d/%m/%Y').date()
+    if len(match) == 1 and '-' in match[0]:
+        return datetime.strptime(match[0], '%d-%m-%Y').date()
+    return None
 
 
 @documents.route('/document', methods=['GET'])
@@ -15,7 +27,6 @@ def find():
     """  """
     publisher = request.args.get('publisher')
     search = request.args.get('search')
-    exact = request.args.get('exact', False)
 
     if not publisher:
         return json_response({'error': 'The field publisher is required'}, 400)
@@ -37,7 +48,6 @@ def find():
                         "publisher.id": publisher
                     }
                 }
-                # "must"
             }
         },
         "highlight": {
@@ -55,21 +65,33 @@ def find():
     }
 
     if search:
-        query['query']['bool']['must'] = [
-            {
-                "multi_match": {
-                    "query": search,
-                    "fields": [
-                        "contents",
-                        "file",
-                        "tags",
-                        "author.name"
-                    ],
-                    "type": "best_fields",
-                    "fuzziness": 1
-                }
+        must_search = [{
+            "multi_match": {
+                "query": search,
+                "fields": [
+                    "contents",
+                    "file",
+                    "tags",
+                    "author.name"
+                ],
+                "type": "best_fields",
+                "fuzziness": 1
             }
-        ]
+        }]
+
+        date = _look_for_single_date(search)
+        if date:
+            # TODO adicionar ordem pela data abaixo crescente
+            must_search.append({
+                "range": {
+                    "published_at": {
+                        "gte": "{} 00:00:00".format(date),
+                        "lte": "now"
+                    }
+                }
+            })
+
+        query['query']['bool']['must'] = must_search
 
     es = ElasticsearchClient(_INDEX)
     data = es.search(query=query, source=source)
@@ -82,7 +104,6 @@ def create():
     """  """
     try:
         data = is_valid_request_new_document(request)
-
         es = ElasticsearchClient(_INDEX)
         created, _id = es.insert(body=data)
 
@@ -90,7 +111,6 @@ def create():
             return json_response({'error': 'Could not save file'}, 500)
 
         response = es.find_id(id=_id)
-
         return json_response(response, 201)
     except TypeError as e:
         return json_response({'error': str(e)}, 400)
